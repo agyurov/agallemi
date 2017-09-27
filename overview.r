@@ -29,10 +29,10 @@ head(df)
 
 p.set = split(df, df$variable)
 
-plot(p.set$p1$value[p.set$p1$nform == 'nh3'], ylim = c(-150,100), pch = 20)
+plot(p.set$p1$dp1[p.set$p1$nform == 'nh3'], ylim = c(-150,150), pch = 20)
 j = 1
 for(i in c('nh4', 'no2', 'no3')){
   j = j + 1
-  lines(p.set$p1$value[p.set$p1$nform == i], col = j)
+  lines(p.set$p1$dp1[p.set$p1$nform == i], col = j)
   print(length(p.set$p1$value[p.set$p1$nform == i]) - sum(is.na(p.set$p1$value[p.set$p1$nform == i])))
 }
