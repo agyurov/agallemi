@@ -40,11 +40,10 @@ names(data.list2) = names(data.list)
 
 
 newnames = c('date', 'inflow', paste0('p',1:6), 'nform')
-
-for(i in 1:length(data.list2)){
-  names(data.list2[[i]]) = newnames
+data.list2b = data.list2
+for(i in 1:length(data.list2b)){
+  names(data.list2b[[i]]) = newnames
 }
-lapply(data.list2, names)
 
 
 
@@ -58,7 +57,7 @@ calc_diff = function(x){
   return(cbind.data.frame(x,y))
 }
 
-data.list3 = lapply(data.list2, calc_diff)
+data.list3 = lapply(data.list2b, calc_diff)
 
 # reshape the data --------------------------------------------------------
 
@@ -72,60 +71,68 @@ data.list4 = lapply(data.list3, pain)
 names(data.list4) = c('nh4n', 'nh4', 'nh3n', 'nh3', 'no2n', 'no2', 'no3n',
                       'no3', 'temp', 'ph', 'o2', 'sat', 'co2')
 
+
+# chop off the head of the snake -------------------------------------------
+# cuz the dates are repeated and also in a diff format
+
+data.list4a = data.list4
+for(i in 1:length(data.list4a)){
+  if(names(data.list4a)[i] == 'temp'){
+    next
+  }
+  data.list4a[[i]] = data.list4a[[i]][-c(1:18),]
+}
+
 # examination of dates ----------------------------------------------------
 
-data.list5 = data.list4
+data.list5 = data.list4a
 for(i in 1:length(data.list4)){
-  data.list5[[i]]$date = substr(data.list4[[i]]$date, 1, 10)
+  data.list5[[i]]$date = substr(data.list4a[[i]]$date, 1, 10)
 }
 
 # date cleaning (date var mostly) -----------------------------------------
 
 clean_trash = function(x){
   y = as.numeric(substr(x$date, 1, 1))
+  if(length(which(is.na(y))) == 0){
+    return(x)
+  }
   x = x[-which(is.na(y)),]
   return(x)
 }
 
 data.list6 = lapply(data.list5, clean_trash)
+
+# Compare dates -----------------------------------------------------------
+
+compare_dates = function(x, y){
+  # if(length(x) >= length(y)){
+  #   longer = x
+  #   shorter = y
+  # }else{
+  #   longer = y
+  #   shorter = x
+  # }
+  return(which(!x %in% y))
+}
+
+test = list()
+data.list7 = data.list6
 for(i in 1:length(data.list6)){
-  data.list6[[i]]$date = as.Date(data.list6[[i]]$date, format = '%Y-%m-%d')
+  print(paste0('nh4 & ', names(data.list6)[i]))
+  test[[i]] = compare_dates(data.list6$nh4$date, data.list6[[i]]$date)
+  print(test[[i]])
+  if(length(test[[i]]) == 0){
+    next
+  }
+  data.list7[[i]] = data.list6[[i]][-test[[i]], ]
 }
 
 
 # data concatenation ------------------------------------------------------
-
-
-
-df = do.call(rbind.data.frame, data.list3)
-df$nform = factor(df$nform)
-
-# REMARK!@!!!!!!!
-# Check manually that the below names match reaity
-# !!!!!!!!!!!!!!!!!!!
-levels(df$nform) = c('c', 'co2', 'nh3', 'nh3n', 'nh4', 'nh4n', 'no2', 'no2n', 'no3', 'no3n', 'o2', 'ph', 'sat')
-str(df)
-
-
-
-
-
-
-# fixing the date variable ------------------------------------------------
-
-
-
-df$date = substr(df$date, 1, 10)
-df$date = as.Date(df$date, format = '%Y-%m-%d')
-
+# first join vertically the nforms
 
 
 write.csv(df, 'preped_data.csv', row.names = F)
-
-
-# REUIQRED FORMAT ---------------------------------------------------------
-
-# DATE CONCENTRATION      NH ..... NO3 C... CO2 SAT
-# {}   {INTAKE, P1 .. P6}
 
 
