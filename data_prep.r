@@ -80,8 +80,10 @@ for(i in 1:length(data.list4a)){
   if(names(data.list4a)[i] == 'temp'){
     next
   }
-  data.list4a[[i]] = data.list4a[[i]][-c(1:18),]
+  data.list4a[[i]] = data.list4a[[i]][-c(1:22),]
 }
+
+
 
 # examination of dates ----------------------------------------------------
 
@@ -105,29 +107,26 @@ data.list6 = lapply(data.list5, clean_trash)
 
 # Compare dates -----------------------------------------------------------
 
-compare_dates = function(x, y){
-  # if(length(x) >= length(y)){
-  #   longer = x
-  #   shorter = y
-  # }else{
-  #   longer = y
-  #   shorter = x
-  # }
-  return(which(!x %in% y))
-}
+# find shortest unique dates
+listofdates = list()
+listofdates = lapply(data.list6, function(x) x$date)
+common_dates = Reduce(intersect, listofdates)
 
-test = list()
 data.list7 = data.list6
 for(i in 1:length(data.list6)){
-  print(paste0('nh4 & ', names(data.list6)[i]))
-  test[[i]] = compare_dates(data.list6$nh4$date, data.list6[[i]]$date)
-  print(test[[i]])
-  if(length(test[[i]]) == 0){
-    next
-  }
-  data.list7[[i]] = data.list6[[i]][-test[[i]], ]
+  test = data.list6[[i]]$date %in% common_dates
+  print(which(!test))
+  data.list7[[i]] = data.list6[[i]][test,]
 }
 
+# aggregate the repeating dates -------------------------------------------
+# cast to factor
+cast_to_factor = function(x){
+  x$date = factor(x$date)
+  x$nform = factor(x$nform)
+  return(x)
+}
+data.list8 = lapply(data.list7, cast_to_factor)
 
 # data concatenation ------------------------------------------------------
 # first join vertically the nforms
