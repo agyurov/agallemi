@@ -128,8 +128,15 @@ cast_to_factor = function(x){
 }
 data.list8 = lapply(data.list7, cast_to_factor)
 
+
+df = do.call(rbind.data.frame, data.list8)
+rownames(df) = NULL
+df$date = as.Date(df$date, format = '%Y-%m-%d')
 # data concatenation ------------------------------------------------------
 # first join vertically the nforms
+
+levels(df$nform) = c('nh4n', 'nh4', 'nh3n', 'nh3', 'no2n', 'no2', 'no3n',
+                     'no3', 'temp', 'ph', 'o2', 'sat', 'co2')
 
 
 write.csv(df, 'preped_data.csv', row.names = F)
