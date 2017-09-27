@@ -60,22 +60,23 @@ calc_diff = function(x){
 
 data.list3 = lapply(data.list2, calc_diff)
 
-# # reshape the data --------------------------------------------------------
-# 
-# pain = function(x){
-#   # x is the data frame
-#   y = melt(x, c('date'), c('inflow', paste0('p', 1:6)))
-#   names(y) = c('date', 'bf', lapply(x, unique)$nform)
-#   return(y)
-# } 
-# 
-# data.list3 = lapply(data.list2, pain)
+# reshape the data --------------------------------------------------------
+
+pain = function(x){
+  # x is the data frame
+  y = melt(x, c('date', 'nform', paste0('dp', 1:6)), paste0('p', 1:6))
+  return(y)
+}
+
+data.list4 = lapply(data.list3, pain)
+names(data.list4) = c('nh4n', 'nh4', 'nh3n', 'nh3', 'no2n', 'no2', 'no3n',
+                      'no3', 'temp', 'ph', 'o2', 'sat', 'co2')
 
 # data concatenation ------------------------------------------------------
 
 
 
-df = do.call(rbind.data.frame, data.list2)
+df = do.call(rbind.data.frame, data.list3)
 df$nform = factor(df$nform)
 
 # REMARK!@!!!!!!!
@@ -83,6 +84,9 @@ df$nform = factor(df$nform)
 # !!!!!!!!!!!!!!!!!!!
 levels(df$nform) = c('c', 'co2', 'nh3', 'nh3n', 'nh4', 'nh4n', 'no2', 'no2n', 'no3', 'no3n', 'o2', 'ph', 'sat')
 str(df)
+
+
+# examination of dates ----------------------------------------------------
 
 
 
