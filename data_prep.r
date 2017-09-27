@@ -72,6 +72,27 @@ data.list4 = lapply(data.list3, pain)
 names(data.list4) = c('nh4n', 'nh4', 'nh3n', 'nh3', 'no2n', 'no2', 'no3n',
                       'no3', 'temp', 'ph', 'o2', 'sat', 'co2')
 
+# examination of dates ----------------------------------------------------
+
+data.list5 = data.list4
+for(i in 1:length(data.list4)){
+  data.list5[[i]]$date = substr(data.list4[[i]]$date, 1, 10)
+}
+
+# date cleaning (date var mostly) -----------------------------------------
+
+clean_trash = function(x){
+  y = as.numeric(substr(x$date, 1, 1))
+  x = x[-which(is.na(y)),]
+  return(x)
+}
+
+data.list6 = lapply(data.list5, clean_trash)
+for(i in 1:length(data.list6)){
+  data.list6[[i]]$date = as.Date(data.list6[[i]]$date, format = '%Y-%m-%d')
+}
+
+
 # data concatenation ------------------------------------------------------
 
 
@@ -86,19 +107,7 @@ levels(df$nform) = c('c', 'co2', 'nh3', 'nh3n', 'nh4', 'nh4n', 'no2', 'no2n', 'n
 str(df)
 
 
-# examination of dates ----------------------------------------------------
 
-
-
-# date cleaning (date var mostly) -----------------------------------------
-
-
-
-x = as.numeric(substr(df$date, 1, 1))
-df = df[-which(is.na(x)),]
-df$nform = gsub('\\..*', '', as.character(df$nform))
-df$nform = factor(df$nform)
-rownames(df) = NULL
 
 
 
