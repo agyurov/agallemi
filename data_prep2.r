@@ -12,7 +12,7 @@ library(tidyr)
 # read in the data --------------------------------------------------------
 
 
-wb = loadWorkbook("original_data.xlsx")
+wb = loadWorkbook("original_data_cut.xlsx")
 dl = readWorksheet(wb, sheet = getSheets(wb))
 dl = dl[1:12]
 
@@ -88,12 +88,12 @@ for(i in 1:length(dl6)){
 df = do.call(rbind.data.frame, dl7)
 df$date = as.Date(df$date, format = '%Y-%m-%d')
 rownames(df) = NULL
-write.csv(df, 'preped_data2.csv', row.names = F)
+# write.csv(df, 'preped_data2.csv', row.names = F)
 
 
 # aggregate dates ---------------------------------------------------------
 
 dfa = gather(dfa, key, value, -date, -nform, -inflow)
-write.csv(dfa, 'preped_data3.csv', row.names = F)
+# write.csv(dfa, 'preped_data3.csv', row.names = F)
 # NOTE! 
 # co2 is virtually useless

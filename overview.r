@@ -2,7 +2,7 @@
 
 rm(list = ls())
 
-df = read.csv('preped_data.csv', header = T, stringsAsFactors = F)
+df = read.csv('preped_data3.csv', header = T, stringsAsFactors = F)
 df$date = as.Date(df$date, format = '%Y-%m-%d')
 df$nform = factor(df$nform)
 df$variable = factor(df$variable)
