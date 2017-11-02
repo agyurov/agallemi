@@ -80,7 +80,7 @@ nforms_out = gather(nforms_out, nform, outflow, 4:11, factor_key=TRUE)
 nforms_in = df.list2[[1]]
 
 for(i in 2:8){
-  nforms_in = cbind(nforms_in, df.list2[[i]][,4])
+  nforms_in = cbind(nforms_in, df.list2[[i]][,3])
 }
 names(nforms_in)[4:11] = paste0(chem[1:8], '_in')
 nforms_in = gather(nforms_in, nform, inflow, 4:11, factor_key=TRUE)
@@ -94,7 +94,7 @@ names(nforms)[1] = 'date'
 df.list3 = list()
 freq = rep(length(levels(nforms$nform)), nrow(df.list2[[11]]))
 for(i in 1:4){
-  df.list3[[i]] = df.list2[[i+8]][,c(1,4)]
+  df.list3[[i]] = df.list2[[i+8]][,c(3,4)]
   df.list3[[i]]$freq = freq
 }
 
