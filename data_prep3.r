@@ -63,23 +63,34 @@ for(i in 1:length(df.list2)){
   names(df.list2[[i]])[4] = gsub('*_.', '', names(df.list2[[i]])[1])
 }
 
-lapply(df.list2, names)
-
+tmp = df.list2
+df.list2 = lapply(df.list2, function(x) x = x[,c(2,3,1,4)])
 
 # Join all N forms --------------------------------------------------------
-
-nforms = df.list2[[1]]
+# first the outflow
+nforms_out = df.list2[[1]]
 
 for(i in 2:8){
-  nforms = cbind(nforms, df.list2[[i]][,4])
+  nforms_out = cbind(nforms_out, df.list2[[i]][,4])
 }
-names(nforms)[4:11] = chem[1:8]
+names(nforms_out)[4:11] = paste0(chem[1:8], '_out')
+nforms_out = gather(nforms_out, nform, outflow, 4:11, factor_key=TRUE)
 
-nforms = gather(nforms, nform, measure, 4:11, factor_key=TRUE)
+# first the inflow
+nforms_in = df.list2[[1]]
+
+for(i in 2:8){
+  nforms_in = cbind(nforms_in, df.list2[[i]][,4])
+}
+names(nforms_in)[4:11] = paste0(chem[1:8], '_in')
+nforms_in = gather(nforms_in, nform, inflow, 4:11, factor_key=TRUE)
+nforms = cbind(nforms_in, outflow = nforms_out$outflow)
+names(nforms)[1] = 'date'
+
 
 
 # expand abiotics ---------------------------------------------------------
-
+##### lapply(df.list2, function(x) range(x[,1], na.rm = T))
 df.list3 = list()
 freq = rep(length(levels(nforms$nform)), nrow(df.list2[[11]]))
 for(i in 1:4){
@@ -97,4 +108,9 @@ for(i in 1:length(df.list3)){
 
 # join them ---------------------------------------------------------------
 
-clean = cbind(nforms, do.call(cbind.data.frame, df.list4))
+# clean = cbind(nforms, do.call(cbind.data.frame, df.list4))
+xx = unlist(lapply(1:8, function(x)seq(x, 22608, by = 8)))
+clean = cbind(nforms,
+              do.call(cbind.data.frame, df.list4)[xx,])
+
+write.csv(clean, 'clean.csv', row.names = F)

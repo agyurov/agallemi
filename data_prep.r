@@ -26,7 +26,6 @@ chemical_naming = function(df, chemname){
 
 # the new data list with the new column -----------------------------------
 
-
 data.list2 = list()
 for(i in 1:length(names(data.list))){
   data.list2[[i]] = chemical_naming(data.list[[i]], names(data.list)[i])
@@ -36,8 +35,6 @@ names(data.list2) = names(data.list)
 
 
 # renaming the variables in the data --------------------------------------
-
-
 
 newnames = c('date', 'inflow', paste0('p',1:6), 'nform')
 data.list2b = data.list2
